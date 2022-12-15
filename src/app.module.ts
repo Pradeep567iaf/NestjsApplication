@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -12,6 +12,8 @@ import { leaveEntity } from './leave/leave.entity';
 import { ClientModule } from './client/client.module';
 import { ClientController } from './client/client.controller';
 import { ClientEntity } from './client/client.entity';
+import { UserSubscriber } from './subscribers/usersubscriber';
+import { AdmintokenChecker } from './middleware/admintokenmiddleware';
 
 @Module({
   imports: [
@@ -32,6 +34,10 @@ import { ClientEntity } from './client/client.entity';
     ClientModule,
   ],
   controllers: [AppController, ClientController],
-  providers: [AppService],
+  providers: [AppService, UserSubscriber],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer:MiddlewareConsumer){
+    consumer.apply(AdmintokenChecker).forRoutes({path:'*',method:RequestMethod.POST});
+  }
+}

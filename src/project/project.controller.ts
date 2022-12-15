@@ -113,8 +113,8 @@ export class ProjectController {
   // searchproject(@Query() query: SearchProjectDto) {
   //   return this.projectservice.searchproject(query);
   // }
-  @Roles(Role.Admin,Role.MANAGER)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  // @Roles(Role.Admin,Role.MANAGER)
+  // @UseGuards(JwtAuthGuard, RolesGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @Get('')
   async Search(

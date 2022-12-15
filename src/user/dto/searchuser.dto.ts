@@ -1,20 +1,20 @@
-import { IsEnum, IsNotEmpty, IsNumber, IsString } from "class-validator";
-import { Role } from "src/enum/role.enum";
+import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { Role } from 'src/enum/role.enum';
 
 //  11) search employee by name, phone, email, role (with pagination)
 export class SearchEmployeeDto {
   @IsNotEmpty()
   @IsString()
-  name: string;
+  username: string;
 
   @IsNotEmpty()
   @IsNumber()
-  contact_number: number;
-  
+  contact: number;
+
   @IsNotEmpty()
   @IsString()
-  email: string;
-  
+  useremail: string;
+
   @IsEnum(Role)
-  role: Role;
+  userrole: Role;
 }

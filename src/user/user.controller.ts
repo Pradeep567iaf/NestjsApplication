@@ -120,17 +120,17 @@ export class UserController {
   //   });
   //   //  return this.userService.Search(query);
   // }
-  @Roles(Role.Admin, Role.MANAGER)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  // @Roles(Role.Admin, Role.MANAGER)
+  // @UseGuards(JwtAuthGuard, RolesGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @Get('')
   async Search(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
-    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 1,
     @Query() searchuser: SearchEmployeeDto,
   ): Promise<Pagination<UserEntity>> {
     limit = limit > 100 ? 100 : limit;
-    return this.userService.paginate(
+    return this.userService.search(
       {
         page,
         limit,

@@ -3,11 +3,11 @@ import { ProjectEnum } from 'src/enum/projectstatus.enum';
 
 export class SearchProjectDto {
   @IsNumber()
-  managerId: number;
+  mid: number;
 
   @IsString()
-  title: string;
+  projecttitle: string;
 
   @IsEnum(ProjectEnum)
-  status: ProjectEnum;
+  projectstatus: ProjectEnum;
 }

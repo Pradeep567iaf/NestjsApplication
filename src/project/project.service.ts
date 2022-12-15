@@ -12,7 +12,11 @@ import { AddDeveloperDto } from './dto/adddeveloper.dto';
 import { RemoveDeveloperDto } from './dto/removeDeveloper.dto';
 import { Developer, ProjectDeveloper } from './project.controller';
 import { SearchProjectDto } from './dto/Search.dto';
-import { IPaginationOptions, paginateRaw, Pagination } from 'nestjs-typeorm-paginate';
+import {
+  IPaginationOptions,
+  paginateRaw,
+  Pagination,
+} from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class ProjectService {
@@ -199,32 +203,33 @@ export class ProjectService {
     searchuser: SearchProjectDto,
   ): Promise<Pagination<ProjectEntity>> {
     console.log(searchuser, '=====');
-    const { managerId, title, status } = searchuser;
-    if (managerId) {
-      const queryBuilder = this.projectrepo
-        .createQueryBuilder('ProjectEntity')
-        .where('ProjectEntity.managerid = :managerid', {
-          managerid: managerId,
-        });
-      return paginateRaw(queryBuilder, options);
+    const { mid, projecttitle, projectstatus } = searchuser;
+    const queryBuilder = await this.projectrepo.createQueryBuilder(
+      'ProjectEntity',
+    );
+    if (mid) {
+      queryBuilder.where('ProjectEntity.managerid = :managerid', {
+        managerid: mid,
+      });
+      queryBuilder.limit(1);
+      queryBuilder.getManyAndCount();
     }
-    if (title) {
-      const queryBuilder = this.projectrepo
-        .createQueryBuilder('ProjectEntity')
-        .where('ProjectEntity.title = :title', {
-          title: title,
-        });
-      return paginateRaw(queryBuilder, options);
+    if (projecttitle) {
+      console.log(projecttitle, '======');
+      queryBuilder.where('ProjectEntity.title = :title', {
+        title: projecttitle,
+      });
+      queryBuilder.limit(1);
+      queryBuilder.getManyAndCount();
     }
-    if (status) {
-      const queryBuilder = this.projectrepo
-        .createQueryBuilder('ProjectEntity')
-        .where('ProjectEntity.status = :status', {
-          status: status,
-        });
-      return paginateRaw(queryBuilder, options);
+    if (projectstatus) {
+      console.log(projectstatus, '======');
+      queryBuilder.where('ProjectEntity.status = :status', {
+        status: projectstatus,
+      });
+      queryBuilder.limit(1);
+      queryBuilder.getManyAndCount();
     }
-
-    throw new NotFoundException();
+    return paginateRaw(queryBuilder, options);
   }
 }

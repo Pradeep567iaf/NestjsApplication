@@ -11,6 +11,7 @@ import {
   paginateRaw,
   Pagination,
 } from 'nestjs-typeorm-paginate';
+import { deserializeUser } from 'passport';
 
 @Injectable()
 export class UserService {
@@ -36,6 +37,15 @@ export class UserService {
 
   // CREATE USER
   async CreateUser(user: UserDto) {
+    // const create = new UserEntity();
+    // create.name = user.name;
+    // create.contact_number=user.contact_number
+    // create.email= user.email
+    // create.Designation = user.Designation
+    // create.address = user.Designation
+    // create.password =  user.password
+    // create.role = user.role
+    // await this.datasource.manager.save(user);/
     // const createuser = await this.datasource
     //   .getRepository(UserEntity)
     //   .createQueryBuilder('UserEntity')
@@ -43,8 +53,10 @@ export class UserService {
     //   .into(UserEntity)
     //   .values(user)
     //   .execute();
-    const createuser = await this.UserRepository.save(user);
-    return createuser;
+    // const createuser = await this.UserRepository.save(user);
+    // return createuser;
+    const users = await this.datasource.getRepository(UserEntity).save(user);
+    return users;
   }
   // END OF CREATE USER
 
@@ -55,6 +67,7 @@ export class UserService {
     //   .createQueryBuilder('UserEntity')
     //   .where('UserEntity.id = :id', { id: userid })
     //   .getOne();
+
     const user = await this.UserRepository.findOne({
       where: {
         id: userid,
@@ -203,67 +216,65 @@ export class UserService {
   }
 
   // searchemployee
-  async Search(user: SearchEmployeeDto) {
-    const { name, contact_number, email, role } = user;
-    const where: FindOptionsWhere<UserEntity> = {};
-    if (name) {
-      where.name = name;
-    }
-    console.log(where);
-    if (contact_number) {
-      where.contact_number = contact_number;
-    }
-    if (email) {
-      where.email = email;
-    }
-    if (role) {
-      where.role = role;
-    }
+  // async Search(user: SearchEmployeeDto) {
+  //   const { name, contact_number, email, role } = user;
+  //   const where: FindOptionsWhere<UserEntity> = {};
+  //   if (name) {
+  //     where.name = name;
+  //   }
+  //   console.log(where);
+  //   if (contact_number) {
+  //     where.contact_number = contact_number;
+  //   }
+  //   if (email) {
+  //     where.email = email;
+  //   }
+  //   if (role) {
+  //     where.role = role;
+  //   }
 
-    const employee = await this.UserRepository.find({
-      where,
-    });
-    return employee;
-  }
+  //   const employee = await this.UserRepository.find({
+  //     where,
+  //   });
+  //   return employee;
+  // }
 
-
-  async paginate(
+  async search(
     options: IPaginationOptions,
     searchuser: SearchEmployeeDto,
   ): Promise<Pagination<UserEntity>> {
-    console.log(searchuser, '=====');
-    const { name, contact_number, email, role } = searchuser;
-    if (name) {
-      const queryBuilder = this.UserRepository.createQueryBuilder(
-        'UserEntity',
-      ).where('UserEntity.name = :name', { name: name });
-      return paginateRaw(queryBuilder, options);
-    }
-    if (contact_number) {
-      const queryBuilder = this.UserRepository.createQueryBuilder(
-        'UserEntity',
-      ).where('UserEntity.contact_number = :contact_number', {
-        contact_number: contact_number,
-      });
-      return paginateRaw(queryBuilder, options);
-    }
-    if (email) {
-      const queryBuilder = this.UserRepository.createQueryBuilder(
-        'UserEntity',
-      ).where('UserEntity.email = :email', {
-        email: email,
-      });
-      return paginateRaw(queryBuilder, options);
-    }
-    if (role) {
-      const queryBuilder = this.UserRepository.createQueryBuilder(
-        'UserEntity',
-      ).where('UserEntity.role = :role', {
-        role: role,
-      });
-      return paginateRaw(queryBuilder, options);
-    }
+    const { username, contact, useremail, userrole } = searchuser;
 
-    throw new NotFoundException();
+    const queryBuilder = this.UserRepository.createQueryBuilder('UserEntity');
+
+    if (username) {
+      queryBuilder.where('UserEntity.name = :name', {
+        name: username,
+      });
+      queryBuilder.limit(1);
+      queryBuilder.getManyAndCount();
+    }
+    if (contact) {
+      queryBuilder.where('UserEntity.contact_number = :contact_number', {
+        contact_number: contact,
+      });
+      queryBuilder.limit(1);
+      queryBuilder.getManyAndCount();
+    }
+    if (useremail) {
+      queryBuilder.where('UserEntity.email = :email', {
+        email: useremail,
+      });
+      queryBuilder.limit(1);
+      queryBuilder.getManyAndCount();
+    }
+    if (userrole) {
+      queryBuilder.where('UserEntity.role = :role', {
+        role: userrole,
+      });
+      queryBuilder.limit(1);
+      queryBuilder.getManyAndCount();
+    }
+    return paginateRaw(queryBuilder, options);
   }
 }
