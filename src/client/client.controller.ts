@@ -7,7 +7,7 @@ import { ClientDto } from './client.dto';
 import { ClientEntity } from './client.entity';
 import { ClientService } from './client.service';
 import { Role } from 'src/enum/role.enum';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 
 @ApiTags('client')
 @Controller('client')
@@ -21,6 +21,13 @@ export class ClientController {
     return this.clientService.createClient(body);
   }
 
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorized Access',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Client fetch  successfully',
+  })
   @Roles(Role.Admin)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('/')
@@ -28,6 +35,13 @@ export class ClientController {
     return this.clientService.GetClients();
   }
 
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorized Access',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Client Deleted  successfully',
+  })
   @Roles(Role.Admin)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete('/:id')
@@ -35,6 +49,10 @@ export class ClientController {
     return this.clientService.DeleteClient(param.id);
   }
 
+  @ApiResponse({
+    status: 200,
+    description: 'Client Updated  successfully',
+  })
   @Roles(Role.Admin)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Put('/:id')

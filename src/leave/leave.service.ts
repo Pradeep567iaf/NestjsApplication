@@ -88,6 +88,7 @@ export class LeaveService {
         Number(e.RequestDate.split('/')[0]) === cur_month &&
         Number(e.RequestDate.split('/')[2]) === cur_year
       ) {
+        console.log(e.RequestDate);
         datecount.push(e);
       }
     });
