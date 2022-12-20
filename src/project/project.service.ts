@@ -10,7 +10,7 @@ import { ProjectEntity } from './project.entity';
 import { Role } from 'src/enum/role.enum';
 import { AddDeveloperDto } from './dto/adddeveloper.dto';
 import { RemoveDeveloperDto } from './dto/removeDeveloper.dto';
-import { Developer, ProjectDeveloper } from './project.controller';
+import { ProjectDeveloperDto } from './project.controller';
 import { SearchProjectDto } from './dto/Search.dto';
 import {
   IPaginationOptions,
@@ -170,7 +170,7 @@ export class ProjectService {
   }
 
   //Project Developer
-  async projectDeveloper(project: ProjectDeveloper) {
+  async projectDeveloper(project: ProjectDeveloperDto) {
     const projectdata = await this.projectrepo.findOne({
       where: {
         id: project.projectid,

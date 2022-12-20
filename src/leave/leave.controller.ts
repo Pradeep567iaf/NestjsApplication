@@ -17,11 +17,13 @@ import { LeaveService } from './leave.service';
 import { Role } from 'src/enum/role.enum';
 import { MonthlyLeaveDto } from './dto/monthlyleave.dto';
 import { UpdateLeave } from './dto/updateLeave.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 export interface ApproveLeave {
   id: number;
 }
 
+@ApiTags('leave')
 @Controller('leave')
 export class LeaveController {
   constructor(private leaveservice: LeaveService) {}
@@ -65,6 +67,6 @@ export class LeaveController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete('cancel')
   CancelLeave(@Request() req) {
-    return this.leaveservice.cancelLeave(req.user)
+    return this.leaveservice.cancelLeave(req.user);
   }
 }

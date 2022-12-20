@@ -22,42 +22,96 @@ import { RolesGuard } from 'src/auth/roles.guard';
 import { ProjectDto } from './dto/project.dto';
 import { AddDeveloperDto } from './dto/adddeveloper.dto';
 import { ProjectUpdateDto } from './dto/projectupdate.dto';
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { projectParamDto } from './dto/projectupdateparam.dto';
 import { RemoveDeveloperDto } from './dto/removeDeveloper.dto';
 import { SearchProjectDto } from './dto/Search.dto';
 import { IPaginationOptions, Pagination } from 'nestjs-typeorm-paginate';
 import { ProjectEntity } from './project.entity';
+import {
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiProperty,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { UserGetParam } from 'src/user/params/usergetparam';
+import { AddManagerDto } from './dto/addmanager.dto';
 
-export interface AddManager {
+// export interface AddManager {
+//   id: number;
+//   projectid: string;
+// }
+
+export class Developer {
+  @ApiProperty({
+    description: 'enter project id',
+    type: String,
+  })
+  @IsNotEmpty()
+  @IsNumber()
   id: number;
+}
+export class ProjectDeveloperDto {
+  @ApiProperty({
+    description: 'Enter project id',
+    type: String,
+  })
+  @IsNotEmpty()
+  @IsString()
   projectid: string;
 }
 
-export interface Developer {
-  id: number;
-}
-export interface ProjectDeveloper {
-  projectid: string;
-}
+@ApiTags('project')
 @Controller('project')
 export class ProjectController {
   constructor(private projectservice: ProjectService) {}
 
+  // get project by id
+  @ApiOkResponse({ description: 'Project Found' })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal Server error',
+  })
   @Get('/:id')
-  ProjectByid(@Request() req, @Param() param) {
+  ProjectByid(@Request() req, @Param() param: projectParamDto) {
     return this.projectservice.Getprojectbyid(param.id);
   }
 
+  //get developer by id
+  @ApiOkResponse({ description: 'Developer Found' })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal Server error',
+  })
+  @ApiNotFoundResponse({
+    description: 'Not found',
+  })
+  @ApiForbiddenResponse({
+    description: 'forbidden response',
+  })
   @Get('developers/:id')
-  Getdevelopers(@Request() req, @Param() param) {
+  Getdevelopers(@Request() req, @Param() param: UserGetParam) {
     return this.projectservice.GetDevelopers(param.id);
   }
 
+  // add manager to project
+  @ApiOkResponse({ description: 'Manager Added' })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal Server error',
+  })
+  @ApiNotFoundResponse({
+    description: 'Not found',
+  })
+  @ApiForbiddenResponse({
+    description: 'forbidden response',
+  })
   @Roles(Role.Admin)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Post('add/manager')
-  addmanager(@Query() query: AddManager) {
+  addmanager(@Query() query: AddManagerDto) {
     return this.projectservice.AddManager(query.id, query.projectid);
   }
 
@@ -80,22 +134,54 @@ export class ProjectController {
     return this.projectservice.projectUpdate(body, param.id);
   }
   //3) add developer to project
+  @ApiOkResponse({ description: 'Developer Added' })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal Server error',
+  })
+  @ApiNotFoundResponse({
+    description: 'Not found',
+  })
+  @ApiForbiddenResponse({
+    description: 'forbidden response',
+  })
   @Roles(Role.Admin, Role.MANAGER)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Post('add/developer')
-  AddDeveloper(@Request() req, @Body() body: AddDeveloperDto) {
-    return this.projectservice.addDevelopertoproject(body);
+  AddDeveloper(@Request() req, @Query() query: AddDeveloperDto) {
+    return this.projectservice.addDevelopertoproject(query);
   }
 
   //4) remove developer
+  @ApiOkResponse({ description: 'Developer removed' })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal Server error',
+  })
+  @ApiNotFoundResponse({
+    description: 'Not found',
+  })
+  @ApiForbiddenResponse({
+    description: 'forbidden response',
+  })
   @Post('remove/developer')
   RemoveDeveloper(@Request() req, @Body() body: RemoveDeveloperDto) {
     return this.projectservice.RemoveDeveloper(body);
   }
   //5) get all developers working on project
-
+  @ApiOkResponse({ description: 'Developers Found' })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal Server error',
+  })
+  @ApiNotFoundResponse({
+    description: 'Not found',
+  })
+  @ApiForbiddenResponse({
+    description: 'forbidden response',
+  })
   @Get('developer/all')
-  ProjectDeveloper(@Request() req, @Body() body: ProjectDeveloper) {
+  ProjectDeveloper(@Request() req, @Body() body: ProjectDeveloperDto) {
     return this.projectservice.projectDeveloper(body);
   }
 

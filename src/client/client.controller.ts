@@ -7,7 +7,9 @@ import { ClientDto } from './client.dto';
 import { ClientEntity } from './client.entity';
 import { ClientService } from './client.service';
 import { Role } from 'src/enum/role.enum';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('client')
 @Controller('client')
 export class ClientController {
   constructor(private clientService: ClientService) {}
@@ -32,7 +34,7 @@ export class ClientController {
   Delete(@Param() param) {
     return this.clientService.DeleteClient(param.id);
   }
-  
+
   @Roles(Role.Admin)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Put('/:id')

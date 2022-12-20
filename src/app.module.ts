@@ -14,9 +14,12 @@ import { ClientController } from './client/client.controller';
 import { ClientEntity } from './client/client.entity';
 import { UserSubscriber } from './subscribers/usersubscriber';
 import { AdmintokenChecker } from './middleware/admintokenmiddleware';
+import { ScheduleModule } from '@nestjs/schedule';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
@@ -33,11 +36,14 @@ import { AdmintokenChecker } from './middleware/admintokenmiddleware';
     LeaveModule,
     ClientModule,
   ],
+
   controllers: [AppController, ClientController],
   providers: [AppService, UserSubscriber],
 })
 export class AppModule {
-  configure(consumer:MiddlewareConsumer){
-    consumer.apply(AdmintokenChecker).forRoutes({path:'*',method:RequestMethod.POST});
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(AdmintokenChecker)
+      .forRoutes({ path: '*', method: RequestMethod.POST });
   }
 }

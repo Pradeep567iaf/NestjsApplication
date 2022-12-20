@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, UseGuards } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { DataSource, FindOptionsWhere, Repository } from 'typeorm';
-import { UserDto } from './user.dto';
+import { UserDto } from './dto/user.dto';
 import { UserEntity } from './user.entity';
 
 import { SearchEmployeeDto } from './dto/searchuser.dto';
@@ -12,6 +12,8 @@ import {
   Pagination,
 } from 'nestjs-typeorm-paginate';
 import { deserializeUser } from 'passport';
+import { profile } from 'console';
+import { UserUpdateDto } from './dto/userupdate.dto';
 
 @Injectable()
 export class UserService {
@@ -21,6 +23,22 @@ export class UserService {
     private readonly UserRepository: Repository<any>,
   ) {}
 
+  // UPLOAD IMAGE
+  async uploadImage(userid: any, file: any) {
+    console.log(userid);
+    console.log(file);
+    const user = await this.UserRepository.findOne({
+      where: {
+        id: userid,
+      },
+    });
+    await this.UserRepository.update(userid, {
+      photo: file.originalname,
+    });
+
+    return user;
+  }
+
   // GET USER BY EMAIL
   async getUserByEmail(useremail: string): Promise<UserEntity | undefined> {
     const user = await this.datasource
@@ -28,9 +46,7 @@ export class UserService {
       .createQueryBuilder('UserEntity')
       .where('UserEntity.email = :email', { email: useremail })
       .getOne();
-
-    // this.datasource.query(`select * from UserEntity where id = ${1}`)
-
+    
     return user;
   }
   // END OF GET USER BY EMAIL
@@ -79,7 +95,7 @@ export class UserService {
   // END OF GET USER BY ID
 
   // UPDATE USER BY ID
-  async Updateuserbyid(userid: number, user: UserDto) {
+  async Updateuserbyid(userid: number, user: UserUpdateDto) {
     // const finduser = await this.datasource
     //   .getRepository(UserEntity)
     //   .createQueryBuilder('UserEntity')

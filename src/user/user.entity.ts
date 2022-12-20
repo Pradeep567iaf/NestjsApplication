@@ -17,9 +17,11 @@ export class UserEntity {
   @Column()
   email: string;
 
-  @Exclude()
   @Column()
   password: string;
+
+  @Column({ nullable: true })
+  photo: string;
 
   @Column({ type: 'enum', enum: Role, default: Role.Employee })
   role: Role[];
